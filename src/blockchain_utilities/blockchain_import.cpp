@@ -54,6 +54,7 @@ bool opt_verify  = true; // use add_new_block, which does verification before ca
 bool opt_resume  = true;
 bool opt_testnet = true;
 bool opt_stagenet = true;
+bool opt_wildnet = true;
 
 // number of blocks per batch transaction
 // adjustable through command-line argument according to available RAM
@@ -666,9 +667,10 @@ int main(int argc, char* argv[])
 
   opt_testnet = command_line::get_arg(vm, cryptonote::arg_testnet_on);
   opt_stagenet = command_line::get_arg(vm, cryptonote::arg_stagenet_on);
-  if (opt_testnet && opt_stagenet)
+  opt_wildnet = command_line::get_arg(vm, cryptonote::arg_wildnet_on);
+  if ((opt_testnet && opt_stagenet) || (opt_testnet && opt_wildnet) || (opt_stagenet && opt_wildnet))
   {
-    std::cerr << "Error: Can't specify more than one of --testnet and --stagenet" << ENDL;
+    std::cerr << "Error: Can't specify more than one of --testnet and --stagenet and --wildnet" << ENDL;
     return 1;
   }
   m_config_folder = command_line::get_arg(vm, cryptonote::arg_data_dir);
@@ -709,7 +711,7 @@ int main(int argc, char* argv[])
     MINFO("batch:   " << std::boolalpha << opt_batch << std::noboolalpha);
   }
   MINFO("resume:  " << std::boolalpha << opt_resume  << std::noboolalpha);
-  MINFO("nettype: " << (opt_testnet ? "testnet" : opt_stagenet ? "stagenet" : "mainnet"));
+  MINFO("nettype: " << (opt_testnet ? "testnet" : opt_stagenet ? "stagenet" : opt_wildnet ? "wildnet" : "mainnet"));
 
   MINFO("bootstrap file path: " << import_file_path);
   MINFO("database path:       " << m_config_folder);

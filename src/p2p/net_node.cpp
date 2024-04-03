@@ -113,29 +113,33 @@ namespace nodetool
 {
     const command_line::arg_descriptor<std::string> arg_p2p_bind_ip        = {"p2p-bind-ip", "Interface for p2p network protocol (IPv4)", "0.0.0.0"};
     const command_line::arg_descriptor<std::string> arg_p2p_bind_ipv6_address        = {"p2p-bind-ipv6-address", "Interface for p2p network protocol (IPv6)", "::"};
-    const command_line::arg_descriptor<std::string, false, true, 2> arg_p2p_bind_port = {
+    const command_line::arg_descriptor<std::string, false, true, 3> arg_p2p_bind_port = {
         "p2p-bind-port"
       , "Port for p2p network protocol (IPv4)"
       , std::to_string(config::P2P_DEFAULT_PORT)
-      , {{ &cryptonote::arg_testnet_on, &cryptonote::arg_stagenet_on }}
-      , [](std::array<bool, 2> testnet_stagenet, bool defaulted, std::string val)->std::string {
-          if (testnet_stagenet[0] && defaulted)
+      , {{ &cryptonote::arg_testnet_on, &cryptonote::arg_stagenet_on, &cryptonote::arg_wildnet_on }}
+      , [](std::array<bool, 3> testnet_stagenet_wildnet, bool defaulted, std::string val)->std::string {
+          if (testnet_stagenet_wildnet[0] && defaulted)
             return std::to_string(config::testnet::P2P_DEFAULT_PORT);
-          else if (testnet_stagenet[1] && defaulted)
+          else if (testnet_stagenet_wildnet[1] && defaulted)
             return std::to_string(config::stagenet::P2P_DEFAULT_PORT);
+          else if (testnet_stagenet_wildnet[2] && defaulted)
+            return std::to_string(config::wildnet::P2P_DEFAULT_PORT);
           return val;
         }
       };
-    const command_line::arg_descriptor<std::string, false, true, 2> arg_p2p_bind_port_ipv6 = {
+    const command_line::arg_descriptor<std::string, false, true, 3> arg_p2p_bind_port_ipv6 = {
         "p2p-bind-port-ipv6"
       , "Port for p2p network protocol (IPv6)"
       , std::to_string(config::P2P_DEFAULT_PORT)
-      , {{ &cryptonote::arg_testnet_on, &cryptonote::arg_stagenet_on }}
-      , [](std::array<bool, 2> testnet_stagenet, bool defaulted, std::string val)->std::string {
-          if (testnet_stagenet[0] && defaulted)
+      , {{ &cryptonote::arg_testnet_on, &cryptonote::arg_stagenet_on, &cryptonote::arg_wildnet_on }}
+      , [](std::array<bool, 3> testnet_stagenet_wildnet, bool defaulted, std::string val)->std::string {
+          if (testnet_stagenet_wildnet[0] && defaulted)
             return std::to_string(config::testnet::P2P_DEFAULT_PORT);
-          else if (testnet_stagenet[1] && defaulted)
+          else if (testnet_stagenet_wildnet[1] && defaulted)
             return std::to_string(config::stagenet::P2P_DEFAULT_PORT);
+          else if (testnet_stagenet_wildnet[2] && defaulted)
+            return std::to_string(config::wildnet::P2P_DEFAULT_PORT);
           return val;
         }
       };

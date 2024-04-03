@@ -45,7 +45,7 @@ const hardfork_t mainnet_hard_forks[] = {
   { 4, 1220516, 0, 1483574400 },
 
   // version 5 starts from block 1288616, which is on or around the 15th of April, 2017. Fork time finalised on 2017-03-14.
-  { 5, 1288616, 0, 1489520158 }, 
+  { 5, 1288616, 0, 1489520158 },
 
   // version 6 starts from block 1400000, which is on or around the 16th of September, 2017. Fork time finalised on 2017-08-18.
   { 6, 1400000, 0, 1503046577 },
@@ -126,3 +126,24 @@ const hardfork_t stagenet_hard_forks[] = {
   { 16, 1151720, 0, 1656629118 },
 };
 const size_t num_stagenet_hard_forks = sizeof(stagenet_hard_forks) / sizeof(stagenet_hard_forks[0]);
+
+const hardfork_t wildnet_hard_forks[] = {
+  // version 1 from the start of the blockchain
+  { 1, 1, 0, 1712000000 },
+  { 2, 2, 0, 1712000120 },
+  { 3, 3, 0, 1712000240 },
+  { 4, 4, 0, 1712000360 },
+  { 5, 5, 0, 1712000480 },
+  { 6, 6, 0, 1712000600 },
+  { 7, 7, 0, 1712000720 },
+  { 8, 8, 0, 1712000840 },
+  { 9, 9, 0, 1712000960 },
+  { 10, 10, 0, 1712001080 },
+  { 11, 11, 0, 1712001200 },
+  { 12, 12, 0, 1712001320 },
+  { 13, 13, 0, 1712001440 },
+  { 14, 14, 0, 1712001560 },
+  { 15, 15, 0, 1712001680 },
+  { 16, 16, 0, 1712001800 },
+};
+const size_t num_wildnet_hard_forks = sizeof(wildnet_hard_forks) / sizeof(wildnet_hard_forks[0]);

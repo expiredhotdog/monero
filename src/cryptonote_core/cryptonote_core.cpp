@@ -83,6 +83,11 @@ namespace cryptonote
   , "Run on stagenet. The wallet must be launched with --stagenet flag."
   , false
   };
+  const command_line::arg_descriptor<bool, false> arg_wildnet_on  = {
+    "wildnet"
+  , "Run on wildnet. The wallet must be launched with --wildnet flag."
+  , false
+  };
   const command_line::arg_descriptor<bool> arg_regtest_on  = {
     "regtest"
   , "Run in a regression testing mode."
@@ -98,16 +103,18 @@ namespace cryptonote
   , "Fixed difficulty used for testing."
   , 0
   };
-  const command_line::arg_descriptor<std::string, false, true, 2> arg_data_dir = {
+  const command_line::arg_descriptor<std::string, false, true, 3> arg_data_dir = {
     "data-dir"
   , "Specify data directory"
   , tools::get_default_data_dir()
-  , {{ &arg_testnet_on, &arg_stagenet_on }}
-  , [](std::array<bool, 2> testnet_stagenet, bool defaulted, std::string val)->std::string {
-      if (testnet_stagenet[0])
+  , {{ &arg_testnet_on, &arg_stagenet_on, &arg_wildnet_on }}
+  , [](std::array<bool, 3> testnet_stagenet_wildnet, bool defaulted, std::string val)->std::string {
+      if (testnet_stagenet_wildnet[0])
         return (boost::filesystem::path(val) / "testnet").string();
-      else if (testnet_stagenet[1])
+      else if (testnet_stagenet_wildnet[1])
         return (boost::filesystem::path(val) / "stagenet").string();
+      else if (testnet_stagenet_wildnet[2])
+        return (boost::filesystem::path(val) / "wildnet").string();
       return val;
     }
   };
@@ -327,6 +334,7 @@ namespace cryptonote
 
     command_line::add_arg(desc, arg_testnet_on);
     command_line::add_arg(desc, arg_stagenet_on);
+    command_line::add_arg(desc, arg_wildnet_on);
     command_line::add_arg(desc, arg_regtest_on);
     command_line::add_arg(desc, arg_keep_fakechain);
     command_line::add_arg(desc, arg_fixed_difficulty);
@@ -359,7 +367,8 @@ namespace cryptonote
     {
       const bool testnet = command_line::get_arg(vm, arg_testnet_on);
       const bool stagenet = command_line::get_arg(vm, arg_stagenet_on);
-      m_nettype = testnet ? TESTNET : stagenet ? STAGENET : MAINNET;
+      const bool wildnet = command_line::get_arg(vm, arg_wildnet_on);
+      m_nettype = testnet ? TESTNET : stagenet ? STAGENET : wildnet ? WILDNET : MAINNET;
     }
 
     m_config_folder = command_line::get_arg(vm, arg_data_dir);
@@ -1095,7 +1104,7 @@ namespace cryptonote
       else if(tvc[i].m_verifivation_impossible)
       {MERROR_VER("Transaction verification impossible: " << results[i].hash);}
 
-      if(tvc[i].m_added_to_pool && results[i].tx.extra.size() <= MAX_TX_EXTRA_SIZE)
+      if(tvc[i].m_added_to_pool && (results[i].tx.extra.size() <= MAX_TX_EXTRA_SIZE))
       {
         MDEBUG("tx added: " << results[i].hash);
         valid_events = true;
@@ -1280,7 +1289,7 @@ namespace cryptonote
       {
         tx_fee_amount += get_tx_fee(tx);
       }
-      
+
       emission_amount += coinbase_amount - tx_fee_amount;
       total_fee_amount += tx_fee_amount;
       return true;
@@ -1755,7 +1764,7 @@ namespace cryptonote
   bool core::get_pool_transaction(const crypto::hash &id, cryptonote::blobdata& tx, relay_category tx_category) const
   {
     return m_mempool.get_transaction(id, tx, tx_category);
-  }  
+  }
   //-----------------------------------------------------------------------------------------------
   bool core::pool_has_tx(const crypto::hash &id) const
   {

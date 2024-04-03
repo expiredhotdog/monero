@@ -407,8 +407,9 @@ namespace nodetool
   {
     bool testnet = command_line::get_arg(vm, cryptonote::arg_testnet_on);
     bool stagenet = command_line::get_arg(vm, cryptonote::arg_stagenet_on);
+    bool wildnet = command_line::get_arg(vm, cryptonote::arg_wildnet_on);
     const bool pad_txs = command_line::get_arg(vm, arg_pad_transactions);
-    m_nettype = testnet ? cryptonote::TESTNET : stagenet ? cryptonote::STAGENET : cryptonote::MAINNET;
+    m_nettype = testnet ? cryptonote::TESTNET : stagenet ? cryptonote::STAGENET : wildnet ? cryptonote::WILDNET : cryptonote::MAINNET;
 
     network_zone& public_zone = m_network_zones[epee::net_utils::zone::public_];
     public_zone.m_connect = &public_connect;
@@ -715,6 +716,9 @@ namespace nodetool
       full_addrs.insert("192.99.8.110:38080");
       full_addrs.insert("37.187.74.171:38080");
     }
+    else if (m_nettype == cryptonote::WILDNET)
+    {
+    }
     else if (m_nettype == cryptonote::FAKECHAIN)
     {
     }
@@ -743,6 +747,10 @@ namespace nodetool
       return get_ip_seed_nodes();
     }
     if (m_nettype == cryptonote::STAGENET)
+    {
+      return get_ip_seed_nodes();
+    }
+    if (m_nettype == cryptonote::WILDNET)
     {
       return get_ip_seed_nodes();
     }
@@ -1222,7 +1230,7 @@ namespace nodetool
     else if (!just_take_peerlist)
     {
       if (context_.support_flags == 0)
-        try_get_support_flags(context_, [](p2p_connection_context& flags_context, const uint32_t& support_flags) 
+        try_get_support_flags(context_, [](p2p_connection_context& flags_context, const uint32_t& support_flags)
         {
           flags_context.support_flags = support_flags;
         });
@@ -1827,7 +1835,7 @@ namespace nodetool
       size_t base_expected_white_connections = (zone.second.m_config.m_net_config.max_out_connection_count*P2P_DEFAULT_WHITELIST_CONNECTIONS_PERCENT)/100;
 
       // carefully avoid `continue` in nested loop
-      
+
       size_t conn_count = get_outgoing_connections_count(zone.second);
       while(conn_count < zone.second.m_config.m_net_config.max_out_connection_count)
       {
@@ -2439,24 +2447,24 @@ namespace nodetool
     bool r = epee::net_utils::async_invoke_remote_command2<typename COMMAND_REQUEST_SUPPORT_FLAGS::response>
     (
       context,
-      COMMAND_REQUEST_SUPPORT_FLAGS::ID, 
-      support_flags_request, 
+      COMMAND_REQUEST_SUPPORT_FLAGS::ID,
+      support_flags_request,
       m_network_zones.at(epee::net_utils::zone::public_).m_net_server.get_config_object(),
       [=](int code, const typename COMMAND_REQUEST_SUPPORT_FLAGS::response& rsp, p2p_connection_context& context_)
-      {  
+      {
         if(code < 0)
         {
           LOG_WARNING_CC(context_, "COMMAND_REQUEST_SUPPORT_FLAGS invoke failed. (" << code <<  ", " << epee::levin::get_err_descr(code) << ")");
           return;
         }
-        
+
         f(context_, rsp.support_flags);
       },
       P2P_DEFAULT_HANDSHAKE_INVOKE_TIMEOUT
     );
 
     return r;
-  }  
+  }
   //-----------------------------------------------------------------------------------
   template<class t_payload_net_handler>
   int node_server<t_payload_net_handler>::handle_timed_sync(int command, typename COMMAND_TIMED_SYNC::request& arg, typename COMMAND_TIMED_SYNC::response& rsp, p2p_connection_context& context)
@@ -2604,9 +2612,9 @@ namespace nodetool
         LOG_DEBUG_CC(context, "PING SUCCESS " << context.m_remote_address.host_str() << ":" << port_l);
       });
     }
-    
+
     if (context.support_flags == 0)
-      try_get_support_flags(context, [](p2p_connection_context& flags_context, const uint32_t& support_flags) 
+      try_get_support_flags(context, [](p2p_connection_context& flags_context, const uint32_t& support_flags)
       {
         flags_context.support_flags = support_flags;
       });

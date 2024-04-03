@@ -1,21 +1,21 @@
 // Copyright (c) 2014-2023, The Monero Project
-// 
+//
 // All rights reserved.
-// 
+//
 // Redistribution and use in source and binary forms, with or without modification, are
 // permitted provided that the following conditions are met:
-// 
+//
 // 1. Redistributions of source code must retain the above copyright notice, this list of
 //    conditions and the following disclaimer.
-// 
+//
 // 2. Redistributions in binary form must reproduce the above copyright notice, this list
 //    of conditions and the following disclaimer in the documentation and/or other
 //    materials provided with the distribution.
-// 
+//
 // 3. Neither the name of the copyright holder nor the names of its contributors may be
 //    used to endorse or promote products derived from this software without specific
 //    prior written permission.
-// 
+//
 // THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY
 // EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF
 // MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL
@@ -232,7 +232,7 @@ bool t_command_parser_executor::set_log_level(const std::vector<std::string>& ar
   }
 }
 
-bool t_command_parser_executor::print_height(const std::vector<std::string>& args) 
+bool t_command_parser_executor::print_height(const std::vector<std::string>& args)
 {
   if (!args.empty()) {
     std::cout << "Invalid syntax: No parameters expected. For more details, use the help command." << std::endl;
@@ -382,27 +382,41 @@ bool t_command_parser_executor::start_mining(const std::vector<std::string>& arg
     {
       if(!cryptonote::get_account_address_from_str(info, cryptonote::STAGENET, args.front()))
       {
-        bool dnssec_valid;
-        std::string address_str = tools::dns_utils::get_account_address_as_str_from_url(args.front(), dnssec_valid,
-            [](const std::string &url, const std::vector<std::string> &addresses, bool dnssec_valid){return addresses[0];});
-        if(!cryptonote::get_account_address_from_str(info, cryptonote::MAINNET, address_str))
+        if(!cryptonote::get_account_address_from_str(info, cryptonote::WILDNET, args.front()))
         {
-          if(!cryptonote::get_account_address_from_str(info, cryptonote::TESTNET, address_str))
+          bool dnssec_valid;
+          std::string address_str = tools::dns_utils::get_account_address_as_str_from_url(args.front(), dnssec_valid,
+              [](const std::string &url, const std::vector<std::string> &addresses, bool dnssec_valid){return addresses[0];});
+          if(!cryptonote::get_account_address_from_str(info, cryptonote::MAINNET, address_str))
           {
-            if(!cryptonote::get_account_address_from_str(info, cryptonote::STAGENET, address_str))
+            if(!cryptonote::get_account_address_from_str(info, cryptonote::TESTNET, address_str))
             {
-              std::cout << "Invalid syntax: Target account address has wrong format. For more details, use the help command." << std::endl;
-              return true;
+              if(!cryptonote::get_account_address_from_str(info, cryptonote::STAGENET, address_str))
+              {
+                if(!cryptonote::get_account_address_from_str(info, cryptonote::WILDNET, address_str))
+                {
+                  std::cout << "Invalid syntax: Target account address has wrong format. For more details, use the help command." << std::endl;
+                  return true;
+                }
+                else
+                {
+                  nettype = cryptonote::WILDNET;
+                }
+              }
+              else
+              {
+                nettype = cryptonote::STAGENET;
+              }
             }
             else
             {
-              nettype = cryptonote::STAGENET;
+              nettype = cryptonote::TESTNET;
             }
           }
-          else
-          {
-            nettype = cryptonote::TESTNET;
-          }
+        }
+        else
+        {
+          nettype = cryptonote::WILDNET;
         }
       }
       else
@@ -421,10 +435,10 @@ bool t_command_parser_executor::start_mining(const std::vector<std::string>& arg
     return true;
   }
   if(nettype != cryptonote::MAINNET)
-    std::cout << "Mining to a " << (nettype == cryptonote::TESTNET ? "testnet" : "stagenet") << " address, make sure this is intentional!" << std::endl;
+    std::cout << "Mining to a " << (nettype == cryptonote::TESTNET ? "testnet" : nettype == cryptonote::WILDNET ? "wildnet": "stagenet") << " address, make sure this is intentional!" << std::endl;
   uint64_t threads_count = 1;
-  bool do_background_mining = false;  
-  bool ignore_battery = false;  
+  bool do_background_mining = false;
+  bool ignore_battery = false;
   if(args.size() > 4)
   {
     std::cout << "Invalid syntax: Too many parameters. For more details, use the help command." << std::endl;

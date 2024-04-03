@@ -16,14 +16,17 @@ This loads the existing blockchain and prints the results to the terminal. Defau
 - `monero-blockchain-stats | save-to-database.sh`
 
 ### Options
-`--data-dir arg` 
+`--data-dir arg`
 to specify location of blockchain storage
 
-`--testnet` 
+`--testnet`
 Run on testnet.
 
 `--stagenet`
 Run on stagenet.
+
+`--wildnet`
+Run on wildnet.
 
 `--log-level arg`
 0-4 or categories

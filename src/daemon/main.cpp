@@ -100,8 +100,8 @@ uint16_t parse_public_rpc_port(const po::variables_map &vm)
 
   if (address->is_loopback() || address->is_local())
   {
-    MLOG_RED(el::Level::Warning, "--" << public_node_arg.name 
-      << " is enabled, but RPC server " << address->str() 
+    MLOG_RED(el::Level::Warning, "--" << public_node_arg.name
+      << " is enabled, but RPC server " << address->str()
       << " may be unreachable from outside, please check RPC server bind address");
   }
 
@@ -240,10 +240,11 @@ int main(int argc, char const * argv[])
 
     const bool testnet = command_line::get_arg(vm, cryptonote::arg_testnet_on);
     const bool stagenet = command_line::get_arg(vm, cryptonote::arg_stagenet_on);
+    const bool wildnet = command_line::get_arg(vm, cryptonote::arg_wildnet_on);
     const bool regtest = command_line::get_arg(vm, cryptonote::arg_regtest_on);
-    if (testnet + stagenet + regtest > 1)
+    if (testnet + stagenet + wildnet + regtest > 1)
     {
-      std::cerr << "Can't specify more than one of --tesnet and --stagenet and --regtest" << ENDL;
+      std::cerr << "Can't specify more than one of --tesnet and --stagenet and --wildnet and --regtest" << ENDL;
       return 1;
     }
 

@@ -305,7 +305,7 @@ bool Blockchain::init(BlockchainDB* db, const network_type nettype, bool offline
   m_fixed_difficulty = fixed_difficulty;
   if (m_hardfork == nullptr)
   {
-    if (m_nettype ==  FAKECHAIN || m_nettype == STAGENET)
+    if (m_nettype == FAKECHAIN || m_nettype == STAGENET || m_nettype == WILDNET)
       m_hardfork = new HardFork(*db, 1, 0);
     else if (m_nettype == TESTNET)
       m_hardfork = new HardFork(*db, 1, testnet_hard_fork_version_1_till);
@@ -326,6 +326,11 @@ bool Blockchain::init(BlockchainDB* db, const network_type nettype, bool offline
   {
     for (size_t n = 0; n < num_stagenet_hard_forks; ++n)
       m_hardfork->add_fork(stagenet_hard_forks[n].version, stagenet_hard_forks[n].height, stagenet_hard_forks[n].threshold, stagenet_hard_forks[n].time);
+  }
+  else if (m_nettype == WILDNET)
+  {
+    for (size_t n = 0; n < num_wildnet_hard_forks; ++n)
+      m_hardfork->add_fork(wildnet_hard_forks[n].version, wildnet_hard_forks[n].height, wildnet_hard_forks[n].threshold, wildnet_hard_forks[n].time);
   }
   else
   {
@@ -2367,6 +2372,7 @@ bool Blockchain::get_output_distribution(uint64_t amount, uint64_t from_height, 
     switch (m_nettype)
     {
       case STAGENET: start_height = stagenet_hard_forks[3].height; break;
+      case WILDNET: start_height = wildnet_hard_forks[3].height; break;
       case TESTNET: start_height = testnet_hard_forks[3].height; break;
       case MAINNET: start_height = mainnet_hard_forks[3].height; break;
       case FAKECHAIN: start_height = 0; break;
@@ -3321,7 +3327,7 @@ bool Blockchain::check_tx_inputs(transaction& tx, tx_verification_context &tvc, 
 
   const uint8_t hf_version = m_hardfork->get_current_version();
 
-  if (hf_version >= HF_VERSION_MIN_2_OUTPUTS)
+  if (hf_version >= HF_VERSION_MIN_2_OUTPUTS && m_nettype != WILDNET)
   {
     if (tx.version >= 2)
     {
@@ -3336,7 +3342,7 @@ bool Blockchain::check_tx_inputs(transaction& tx, tx_verification_context &tvc, 
 
   // from hard fork 2, we require mixin at least 2 unless one output cannot mix with 2 others
   // if one output cannot mix with 2 others, we accept at most 1 output that can mix
-  if (hf_version >= 2)
+  if (hf_version >= 2 && m_nettype != WILDNET)
   {
     size_t n_unmixable = 0, n_mixable = 0;
     size_t min_actual_mixin = std::numeric_limits<size_t>::max();
@@ -3529,7 +3535,7 @@ bool Blockchain::check_tx_inputs(transaction& tx, tx_verification_context &tvc, 
       return false;
 
   // enforce min output age
-  if (hf_version >= HF_VERSION_ENFORCE_MIN_AGE)
+  if (hf_version >= HF_VERSION_ENFORCE_MIN_AGE && m_nettype != WILDNET)
   {
     CHECK_AND_ASSERT_MES(*pmax_used_block_height + CRYPTONOTE_DEFAULT_TX_SPENDABLE_AGE <= m_db->height(),
         false, "Transaction spends at least one output which is too young");

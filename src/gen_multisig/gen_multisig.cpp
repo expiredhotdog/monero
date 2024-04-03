@@ -1,21 +1,21 @@
 // Copyright (c) 2017-2023, The Monero Project
-// 
+//
 // All rights reserved.
-// 
+//
 // Redistribution and use in source and binary forms, with or without modification, are
 // permitted provided that the following conditions are met:
-// 
+//
 // 1. Redistributions of source code must retain the above copyright notice, this list of
 //    conditions and the following disclaimer.
-// 
+//
 // 2. Redistributions in binary form must reproduce the above copyright notice, this list
 //    of conditions and the following disclaimer in the documentation and/or other
 //    materials provided with the distribution.
-// 
+//
 // 3. Neither the name of the copyright holder nor the names of its contributors may be
 //    used to endorse or promote products derived from this software without specific
 //    prior written permission.
-// 
+//
 // THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY
 // EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF
 // MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL
@@ -25,12 +25,12 @@
 // INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT,
 // STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF
 // THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-// 
+//
 // Parts of this file are originally copyright (c) 2012-2013 The Cryptonote developers
 
 /*!
  * \file gen_multisig.cpp
- * 
+ *
  * \brief Generates a set of multisig wallets
  */
 #include <iostream>
@@ -72,6 +72,7 @@ namespace
   const command_line::arg_descriptor<uint32_t> arg_threshold = {"threshold", genms::tr("How many signers are required to sign a valid transaction"), 0};
   const command_line::arg_descriptor<bool, false> arg_testnet = {"testnet", genms::tr("Create testnet multisig wallets"), false};
   const command_line::arg_descriptor<bool, false> arg_stagenet = {"stagenet", genms::tr("Create stagenet multisig wallets"), false};
+  const command_line::arg_descriptor<bool, false> arg_wildnet = {"wildnet", genms::tr("Create wildnet multisig wallets"), false};
   const command_line::arg_descriptor<bool, false> arg_create_address_file = {"create-address-file", genms::tr("Create an address file for new wallets"), false};
 }
 
@@ -156,13 +157,14 @@ int main(int argc, char* argv[])
   command_line::add_arg(desc_params, arg_participants);
   command_line::add_arg(desc_params, arg_testnet);
   command_line::add_arg(desc_params, arg_stagenet);
+  command_line::add_arg(desc_params, arg_wildnet);
   command_line::add_arg(desc_params, arg_create_address_file);
 
   boost::optional<po::variables_map> vm;
   bool should_terminate = false;
   std::tie(vm, should_terminate) = wallet_args::main(
    argc, argv,
-   "monero-gen-multisig [(--testnet|--stagenet)] [--filename-base=<filename>] [--scheme=M/N] [--threshold=M] [--participants=N]",
+   "monero-gen-multisig [(--testnet|--stagenet|--wildnet)] [--filename-base=<filename>] [--scheme=M/N] [--threshold=M] [--participants=N]",
     genms::tr("This program generates a set of multisig wallets - use this simpler scheme only if all the participants trust each other"),
     desc_params,
     boost::program_options::positional_options_description(),
@@ -174,13 +176,14 @@ int main(int argc, char* argv[])
   if (should_terminate)
     return 0;
 
-  bool testnet, stagenet;
+  bool testnet, stagenet, wildnet;
   uint32_t threshold = 0, total = 0;
   std::string basename;
 
   testnet = command_line::get_arg(*vm, arg_testnet);
   stagenet = command_line::get_arg(*vm, arg_stagenet);
-  if (testnet && stagenet)
+  wildnet = command_line::get_arg(*vm, arg_wildnet);
+  if ((testnet && stagenet) || (testnet && wildnet) || (stagenet && wildnet))
   {
     tools::fail_msg_writer() << genms::tr("Error: Can't specify more than one of --testnet and --stagenet");
     return 1;
@@ -227,7 +230,7 @@ int main(int argc, char* argv[])
   }
 
   bool create_address_file = command_line::get_arg(*vm, arg_create_address_file);
-  if (!generate_multisig(threshold, total, basename, testnet ? TESTNET : stagenet ? STAGENET : MAINNET, create_address_file))
+  if (!generate_multisig(threshold, total, basename, testnet ? TESTNET : stagenet ? STAGENET : wildnet ? WILDNET : MAINNET, create_address_file))
     return 1;
 
   return 0;
