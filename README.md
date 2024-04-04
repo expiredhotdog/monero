@@ -1,4 +1,47 @@
-# Monero
+# Do NOT attempt to use this software on mainnet!
+
+Wildnet is a modified version of the Monero software with many limits either relaxed greatly or removed outright.
+It is intended for experimentation purposes, and to act as a form of private testnet.
+Don't expect tests to pass.
+
+This software *directly* removes several components of transaction validation, and so cannot be used on mainnet in any safe manner.
+**Wildnet behavior is enabled at all times in this software**, and cannot be disabled.
+
+By default, wildnet uses ports 58080 (P2P), 58081 (RPC), and 58082 (ZMQ RPC).
+It has a unique network ID, genesis block, and address prefixes.
+Wallet and database files are stored in a separate "wildnet" folder.
+All hard forks (up to v16, the most recent at the time of writing) occur immediately after the genesis block.
+The wildnet rules take effect on block 16, which enables v16.
+
+Notable monerod changes (so far):
+* Relaxed transaction input requirements
+  * Decreased minimum ringsize: 16 -> 1
+  * Removed maximum ringsize: 16 -> N/A
+* Relaxed transaction output requirements
+  * Decreased minimum number of outputs: 2 -> 1
+* Relaxed mandatory output lock times
+  * Decreased coinbase lock time: 60 blocks -> 1 block
+  * Decreased non-coinbase lock time: 10 blocks -> 1 block
+* Relaxed size limits:
+  * Increased minimum penalty-free block size: 300 KB -> 10 MB
+  * Increased maximum transaction size: 1 MB -> 1 GB
+  * Increased tx_extra size limit: 1060 bytes -> 1 GB
+* Re-enabled all old transaction types
+* Decreased fees
+
+Notable wallet changes (so far):
+* Relaxed transaction input requirements
+  * Decreased minimum ringsize: 16 -> 1
+  * Increased maximum ringsize: 16 -> 16777216
+* Decreased fees
+
+TODO:
+* Further Increase minimum penalty-free block size: 10 MB -> 1 GB
+* Increase maximum transaction outputs: 16 -> ???
+* Increase default ringsize in wallet: 1 -> ???
+* Allow wallet to use old transaction types
+
+# Monero Wildnet
 
 Copyright (c) 2014-2023, The Monero Project
 Portions Copyright (c) 2012-2013 The Cryptonote developers.
@@ -89,14 +132,14 @@ As with many development projects, the repository on GitHub is considered to be 
 
 Monero is a 100% community-sponsored endeavor. If you want to join our efforts, the easiest thing you can do is support the project financially. Both Monero and Bitcoin donations can be made to **donate.getmonero.org** if using a client that supports the [OpenAlias](https://openalias.org) standard. Alternatively, you can send XMR to the Monero donation address via the `donate` command (type `help` in the command-line wallet for details).
 
-The Monero donation address is:  
-`888tNkZrPN6JsEgekjMnABU4TBzc2Dt29EPAvkRxbANsAnjyPbb3iQ1YBRk1UXcdRsiKc9dhwMVgN5S9cQUiyoogDavup3H`  
-Viewkey:  
-`f359631075708155cc3d92a32b75a7d02a5dcf27756707b47a2b31b21c389501`  
+The Monero donation address is:
+`888tNkZrPN6JsEgekjMnABU4TBzc2Dt29EPAvkRxbANsAnjyPbb3iQ1YBRk1UXcdRsiKc9dhwMVgN5S9cQUiyoogDavup3H`
+Viewkey:
+`f359631075708155cc3d92a32b75a7d02a5dcf27756707b47a2b31b21c389501`
 Base address for restoring with address and viewkey:
-`44AFFq5kSiGBoZ4NMDwYtN18obc8AemS33DBLWs3H7otXft3XjrpDtQGv7SqSsaBYBb98uNbr2VBBEt7f2wfn3RVGQBEP3A`  
+`44AFFq5kSiGBoZ4NMDwYtN18obc8AemS33DBLWs3H7otXft3XjrpDtQGv7SqSsaBYBb98uNbr2VBBEt7f2wfn3RVGQBEP3A`
 
-The Bitcoin donation address is:  
+The Bitcoin donation address is:
 `1KTexdemPdxSBcG55heUuTjDRYqbC5ZL8H`
 
 Core development funding and/or some supporting services are also graciously provided by [sponsors](https://www.getmonero.org/community/sponsorships/):
@@ -250,7 +293,7 @@ If you already have a repo cloned, initialize and update:
 cd monero && git submodule init && git submodule update
 ```
 
-*Note*: If there are submodule differences between branches, you may need 
+*Note*: If there are submodule differences between branches, you may need
 to use `git submodule sync && git submodule update` after changing branches
 to build successfully.
 
@@ -332,8 +375,8 @@ Tested on a Raspberry Pi Zero with a clean install of minimal Raspbian Stretch (
 * Increase the system swap size:
 
     ```bash
-    sudo /etc/init.d/dphys-swapfile stop  
-    sudo nano /etc/dphys-swapfile  
+    sudo /etc/init.d/dphys-swapfile stop
+    sudo nano /etc/dphys-swapfile
     CONF_SWAPSIZE=2048
     sudo /etc/init.d/dphys-swapfile start
     ```
@@ -395,7 +438,7 @@ If you are using the older Raspbian Jessie image, compiling Monero is a bit more
 
 * Wait ~8 hours
 
-    ```bash    
+    ```bash
     sudo ./bjam cxxflags=-fPIC cflags=-fPIC -a install
     ```
 
@@ -500,7 +543,7 @@ application.
 
 ### On FreeBSD:
 
-The project can be built from scratch by following instructions for Linux above(but use `gmake` instead of `make`). 
+The project can be built from scratch by following instructions for Linux above(but use `gmake` instead of `make`).
 If you are running Monero in a jail, you need to add `sysvsem="new"` to your jail configuration, otherwise lmdb will throw the error message: `Failed to open lmdb environment: Function not implemented`.
 
 Monero is also available as a port or package as `monero-cli`.
@@ -563,7 +606,7 @@ You can also cross-compile static binaries on Linux for Windows and macOS with t
 * ```make depends target=x86_64-linux-gnu``` for 64-bit linux binaries.
 * ```make depends target=x86_64-w64-mingw32``` for 64-bit windows binaries.
   * Requires: `python3 g++-mingw-w64-x86-64 wine1.6 bc`
-  * You also need to run:  
+  * You also need to run:
 ```update-alternatives --set x86_64-w64-mingw32-g++ x86_64-w64-mingw32-g++-posix && update-alternatives --set x86_64-w64-mingw32-gcc x86_64-w64-mingw32-gcc-posix```
 * ```make depends target=x86_64-apple-darwin``` for macOS binaries.
   * Requires: `cmake imagemagick libcap-dev librsvg2-bin libz-dev libbz2-dev libtiff-tools python-dev`
@@ -591,7 +634,7 @@ The produced binaries still link libc dynamically. If the binary is compiled on 
 
 ### Trezor hardware wallet support
 
-If you have an issue with building Monero with Trezor support, you can disable it by setting `USE_DEVICE_TREZOR=OFF`, e.g., 
+If you have an issue with building Monero with Trezor support, you can disable it by setting `USE_DEVICE_TREZOR=OFF`, e.g.,
 
 ```bash
 USE_DEVICE_TREZOR=OFF make release

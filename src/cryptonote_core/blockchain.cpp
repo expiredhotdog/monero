@@ -3040,7 +3040,7 @@ bool Blockchain::check_tx_outputs(const transaction& tx, tx_verification_context
   const uint8_t hf_version = m_hardfork->get_current_version();
 
   // from hard fork 2, we forbid dust and compound outputs
-  if (hf_version >= 2) {
+  if (hf_version >= 2 && false) {
     for (auto &o: tx.vout) {
       if (tx.version == 1)
       {
@@ -3053,7 +3053,7 @@ bool Blockchain::check_tx_outputs(const transaction& tx, tx_verification_context
   }
 
   // in a v2 tx, all outputs must have 0 amount
-  if (hf_version >= 3) {
+  if (hf_version >= 3 && false) {
     if (tx.version >= 2) {
       for (auto &o: tx.vout) {
         if (o.amount != 0) {
@@ -3065,7 +3065,7 @@ bool Blockchain::check_tx_outputs(const transaction& tx, tx_verification_context
   }
 
   // from v4, forbid invalid pubkeys
-  if (hf_version >= 4) {
+  if (hf_version >= 4 && false) {
     for (const auto &o: tx.vout) {
       crypto::public_key output_public_key;
       if (!get_output_public_key(o, output_public_key)) {
@@ -3093,7 +3093,7 @@ bool Blockchain::check_tx_outputs(const transaction& tx, tx_verification_context
   }
 
   // from v9, forbid borromean range proofs
-  if (hf_version > 8) {
+  if (hf_version > 8 && false) {
     if (tx.version >= 2) {
       const bool borromean = rct::is_rct_borromean(tx.rct_signatures.type);
       if (borromean)
@@ -3118,7 +3118,7 @@ bool Blockchain::check_tx_outputs(const transaction& tx, tx_verification_context
   }
 
   // from v11, allow only bulletproofs v2
-  if (hf_version > HF_VERSION_SMALLER_BP) {
+  if (hf_version > HF_VERSION_SMALLER_BP && false) {
     if (tx.version >= 2) {
       if (tx.rct_signatures.type == rct::RCTTypeBulletproof)
       {
@@ -3142,7 +3142,7 @@ bool Blockchain::check_tx_outputs(const transaction& tx, tx_verification_context
   }
 
   // from v14, allow only CLSAGs
-  if (hf_version > HF_VERSION_CLSAG) {
+  if (hf_version > HF_VERSION_CLSAG && false) {
     if (tx.version >= 2) {
       if (tx.rct_signatures.type <= rct::RCTTypeBulletproof2)
       {
@@ -3179,7 +3179,7 @@ bool Blockchain::check_tx_outputs(const transaction& tx, tx_verification_context
   }
 
   // from v16, forbid bulletproofs
-  if (hf_version > HF_VERSION_BULLETPROOF_PLUS) {
+  if (hf_version > HF_VERSION_BULLETPROOF_PLUS && false) {
     if (tx.version >= 2) {
       const bool bulletproof = rct::is_rct_bulletproof(tx.rct_signatures.type);
       if (bulletproof)
@@ -3321,7 +3321,7 @@ bool Blockchain::check_tx_inputs(transaction& tx, tx_verification_context &tvc, 
 
   const uint8_t hf_version = m_hardfork->get_current_version();
 
-  if (hf_version >= HF_VERSION_MIN_2_OUTPUTS)
+  if (hf_version >= HF_VERSION_MIN_2_OUTPUTS && false)
   {
     if (tx.version >= 2)
     {
@@ -3336,7 +3336,7 @@ bool Blockchain::check_tx_inputs(transaction& tx, tx_verification_context &tvc, 
 
   // from hard fork 2, we require mixin at least 2 unless one output cannot mix with 2 others
   // if one output cannot mix with 2 others, we accept at most 1 output that can mix
-  if (hf_version >= 2)
+  if (hf_version >= 2 && false)
   {
     size_t n_unmixable = 0, n_mixable = 0;
     size_t min_actual_mixin = std::numeric_limits<size_t>::max();
@@ -3431,7 +3431,7 @@ bool Blockchain::check_tx_inputs(transaction& tx, tx_verification_context &tvc, 
   }
 
   // from v7, sorted ins
-  if (hf_version >= 7) {
+  if (hf_version >= 7 && false) {
     const crypto::key_image *last_key_image = NULL;
     for (size_t n = 0; n < tx.vin.size(); ++n)
     {

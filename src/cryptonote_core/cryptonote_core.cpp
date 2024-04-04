@@ -104,11 +104,11 @@ namespace cryptonote
   , tools::get_default_data_dir()
   , {{ &arg_testnet_on, &arg_stagenet_on }}
   , [](std::array<bool, 2> testnet_stagenet, bool defaulted, std::string val)->std::string {
-      if (testnet_stagenet[0])
-        return (boost::filesystem::path(val) / "testnet").string();
-      else if (testnet_stagenet[1])
-        return (boost::filesystem::path(val) / "stagenet").string();
-      return val;
+      // if (testnet_stagenet[0])
+      //   return (boost::filesystem::path(val) / "testnet").string();
+      // else if (testnet_stagenet[1])
+      //   return (boost::filesystem::path(val) / "stagenet").string();
+      return (boost::filesystem::path(val) / "wildnet").string(); // return val;
     }
   };
   const command_line::arg_descriptor<bool> arg_offline = {
@@ -1280,7 +1280,7 @@ namespace cryptonote
       {
         tx_fee_amount += get_tx_fee(tx);
       }
-      
+
       emission_amount += coinbase_amount - tx_fee_amount;
       total_fee_amount += tx_fee_amount;
       return true;
@@ -1755,7 +1755,7 @@ namespace cryptonote
   bool core::get_pool_transaction(const crypto::hash &id, cryptonote::blobdata& tx, relay_category tx_category) const
   {
     return m_mempool.get_transaction(id, tx, tx_category);
-  }  
+  }
   //-----------------------------------------------------------------------------------------------
   bool core::pool_has_tx(const crypto::hash &id) const
   {
