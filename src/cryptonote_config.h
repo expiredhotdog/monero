@@ -35,7 +35,7 @@
 #include <string>
 #include <boost/uuid/uuid.hpp>
 
-#define CRYPTONOTE_DNS_TIMEOUT_MS                       20000
+#define CRYPTONOTE_DNS_TIMEOUT_MS                       200000
 
 #define CRYPTONOTE_MAX_BLOCK_NUMBER                     500000000
 #define CRYPTONOTE_MAX_TX_SIZE                          1000000000
@@ -137,7 +137,7 @@
 #define P2P_DEFAULT_PACKET_MAX_SIZE                     1073741824
 #define P2P_DEFAULT_PEERS_IN_HANDSHAKE                  250
 #define P2P_MAX_PEERS_IN_HANDSHAKE                      250
-#define P2P_DEFAULT_CONNECTION_TIMEOUT                  5000       //5 seconds
+#define P2P_DEFAULT_CONNECTION_TIMEOUT                  20000       //20 seconds
 #define P2P_DEFAULT_SOCKS_CONNECT_TIMEOUT               45         // seconds
 #define P2P_DEFAULT_PING_CONNECTION_TIMEOUT             2000       //2 seconds
 #define P2P_DEFAULT_INVOKE_TIMEOUT                      60*2*1000  //2 minutes
@@ -196,8 +196,8 @@
 
 #define DEFAULT_TXPOOL_MAX_WEIGHT               1073741824ull
 
-#define BULLETPROOF_MAX_OUTPUTS                 16
-#define BULLETPROOF_PLUS_MAX_OUTPUTS            16
+#define BULLETPROOF_MAX_OUTPUTS                 4096
+#define BULLETPROOF_PLUS_MAX_OUTPUTS            4096
 
 #define CRYPTONOTE_PRUNING_STRIPE_SIZE          4096 // the smaller, the smoother the increase
 #define CRYPTONOTE_PRUNING_LOG_STRIPES          3 // the higher, the more space saved

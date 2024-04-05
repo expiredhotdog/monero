@@ -6,7 +6,7 @@
 */
 // Copyright (c) 2006-2013, Andrey N. Sabelnikov, www.sabelnikov.net
 // All rights reserved.
-// 
+//
 // Redistribution and use in source and binary forms, with or without
 // modification, are permitted provided that the following conditions are met:
 // * Redistributions of source code must retain the above copyright
@@ -17,7 +17,7 @@
 // * Neither the name of the Andrey N. Sabelnikov nor the
 // names of its contributors may be used to endorse or promote products
 // derived from this software without specific prior written permission.
-// 
+//
 // THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
 // ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
 // WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
@@ -28,7 +28,7 @@
 // ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 // (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-// 
+//
 
 
 
@@ -55,10 +55,10 @@
 #define MONERO_DEFAULT_LOG_CATEGORY "net"
 
 #define AGGRESSIVE_TIMEOUT_THRESHOLD 120 // sockets
-#define NEW_CONNECTION_TIMEOUT_LOCAL 1200000 // 2 minutes
-#define NEW_CONNECTION_TIMEOUT_REMOTE 10000 // 10 seconds
-#define DEFAULT_TIMEOUT_MS_LOCAL 1800000 // 30 minutes
-#define DEFAULT_TIMEOUT_MS_REMOTE 300000 // 5 minutes
+#define NEW_CONNECTION_TIMEOUT_LOCAL 12000000 // 20 minutes
+#define NEW_CONNECTION_TIMEOUT_REMOTE 100000 // 100 seconds
+#define DEFAULT_TIMEOUT_MS_LOCAL 18000000 // 300 minutes
+#define DEFAULT_TIMEOUT_MS_REMOTE 18000000 // 300 minutes
 #define TIMEOUT_EXTRA_MS_PER_BYTE 0.2
 
 
@@ -1133,7 +1133,7 @@ namespace net_utils
     acceptor_(io_service_),
     acceptor_ipv6(io_service_),
     default_remote(),
-    m_stop_signal_sent(false), m_port(0), 
+    m_stop_signal_sent(false), m_port(0),
     m_threads_count(0),
     m_thread_index(0),
 		m_connection_type( connection_type ),
@@ -1170,7 +1170,7 @@ namespace net_utils
   }
   //---------------------------------------------------------------------------------
   template<class t_protocol_handler>
-  void boosted_tcp_server<t_protocol_handler>::create_server_type_map() 
+  void boosted_tcp_server<t_protocol_handler>::create_server_type_map()
   {
 		server_type_map["NET"] = e_connection_type_NET;
 		server_type_map["RPC"] = e_connection_type_RPC;
@@ -1379,7 +1379,7 @@ namespace net_utils
         m_threads.clear();
         _fact("JOINING all threads - DONE");
 
-      } 
+      }
       else {
 		_dbg1("Reiniting OK.");
         return true;
@@ -1774,7 +1774,7 @@ namespace net_utils
       assert(m_state != nullptr); // always set in constructor
       _erro("[sock " << new_connection_l->socket().native_handle() << "] Failed to start connection, connections_count = " << m_state->sock_count);
     }
-    
+
 	new_connection_l->save_dbg_log();
 
     return r;
@@ -1785,7 +1785,7 @@ namespace net_utils
   template<class t_protocol_handler> template<class t_callback>
   bool boosted_tcp_server<t_protocol_handler>::connect_async(const std::string& adr, const std::string& port, uint32_t conn_timeout, const t_callback &cb, const std::string& bind_ip, epee::net_utils::ssl_support_t ssl_support)
   {
-    TRY_ENTRY();    
+    TRY_ENTRY();
     connection_ptr new_connection_l(new connection<t_protocol_handler>(io_service_, m_state, m_connection_type, ssl_support) );
     connections_mutex.lock();
     connections_.insert(new_connection_l);
@@ -1793,7 +1793,7 @@ namespace net_utils
     connections_mutex.unlock();
     epee::misc_utils::auto_scope_leave_caller scope_exit_handler = epee::misc_utils::create_scope_leave_handler([&](){ CRITICAL_REGION_LOCAL(connections_mutex); connections_.erase(new_connection_l); });
     boost::asio::ip::tcp::socket&  sock_ = new_connection_l->socket();
-    
+
     bool try_ipv6 = false;
 
     boost::asio::ip::tcp::resolver resolver(io_service_);
@@ -1848,7 +1848,7 @@ namespace net_utils
 
 
     boost::asio::ip::tcp::endpoint remote_endpoint(*iterator);
-     
+
     sock_.open(remote_endpoint.protocol());
     if(bind_ip != "0.0.0.0" && bind_ip != "0" && bind_ip != "" )
     {
@@ -1863,13 +1863,13 @@ namespace net_utils
         return false;
       }
     }
-    
+
     boost::shared_ptr<boost::asio::deadline_timer> sh_deadline(new boost::asio::deadline_timer(io_service_));
     //start deadline
     sh_deadline->expires_from_now(boost::posix_time::milliseconds(conn_timeout));
     sh_deadline->async_wait([=](const boost::system::error_code& error)
       {
-          if(error != boost::asio::error::operation_aborted) 
+          if(error != boost::asio::error::operation_aborted)
           {
             _dbg3("Failed to connect to " << adr << ':' << port << ", because of timeout (" << conn_timeout << ")");
             new_connection_l->socket().close();
@@ -1917,6 +1917,6 @@ namespace net_utils
     return true;
     CATCH_ENTRY_L0("boosted_tcp_server<t_protocol_handler>::connect_async", false);
   }
-  
+
 } // namespace
 } // namespace

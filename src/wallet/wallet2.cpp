@@ -3517,7 +3517,7 @@ bool wallet2::accept_pool_tx_for_processing(const crypto::hash &txid)
 void wallet2::process_unconfirmed_transfer(bool incremental, const crypto::hash &txid, wallet2::unconfirmed_transfer_details &tx_details, bool seen_in_pool, std::chrono::system_clock::time_point now, bool refreshed)
 {
   // TODO: set tx_propagation_timeout to CRYPTONOTE_DANDELIONPP_EMBARGO_AVERAGE * 3 / 2 after v15 hardfork
-  constexpr const std::chrono::seconds tx_propagation_timeout{500};
+  constexpr const std::chrono::seconds tx_propagation_timeout{3600};
   if (seen_in_pool)
   {
     if (tx_details.m_state != wallet2::unconfirmed_transfer_details::pending_in_pool)
@@ -8685,7 +8685,7 @@ void wallet2::get_outs(std::vector<std::vector<tools::wallet2::get_outs_entry>> 
     }
 
     // we ask for more, to have spares if some outputs are still locked
-    size_t base_requested_outputs_count = (size_t)((fake_outputs_count + 1) * 1.5 + 1);
+    size_t base_requested_outputs_count = (size_t)((fake_outputs_count + 1) * 1.1 + 1);
     LOG_PRINT_L2("base_requested_outputs_count: " << base_requested_outputs_count);
 
     // generate output indices to request

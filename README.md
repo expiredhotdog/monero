@@ -13,12 +13,13 @@ Wallet and database files are stored in a separate "wildnet" folder.
 All hard forks (up to v16, the most recent at the time of writing) occur immediately after the genesis block.
 The wildnet rules take effect on block 16, which enables v16.
 
-Notable monerod changes (so far):
+Notable changes (so far):
 * Relaxed transaction input requirements
   * Decreased minimum ringsize: 16 -> 1
   * Removed maximum ringsize: 16 -> N/A
 * Relaxed transaction output requirements
   * Decreased minimum number of outputs: 2 -> 1
+  * Increased maximum number of outputs: 16 -> 4096
 * Relaxed mandatory output lock times
   * Decreased coinbase lock time: 60 blocks -> 1 block
   * Decreased non-coinbase lock time: 10 blocks -> 1 block
@@ -29,17 +30,17 @@ Notable monerod changes (so far):
 * Re-enabled all old transaction types
 * Decreased fees
 
-Notable wallet changes (so far):
-* Relaxed transaction input requirements
-  * Decreased minimum ringsize: 16 -> 1
-  * Increased maximum ringsize: 16 -> 16777216
-* Decreased fees
+Note that not all changes are supported by the wallet yet.
 
 TODO:
-* Further Increase minimum penalty-free block size: 10 MB -> 1 GB
-* Increase maximum transaction outputs: 16 -> ???
+* Further increase the minimum penalty-free block size: 10 MB -> 1 GB
 * Increase default ringsize in wallet: 1 -> ???
-* Allow wallet to use old transaction types
+* Unimplemented changes in wallet
+  * Allow wallet to create old transaction types
+  * Allow wallet to create transactions with less than 2 outputs
+
+Note on ringsizes: in order to have fallbacks in case some outputs are locked, the wallet will request 10% (decreased from 50%) more outputs than required for the ring.
+If, for example, you want to try a ringsize = 1000 transaction, make sure that the network has at least 1100 outputs to pick from.
 
 # Monero Wildnet
 
