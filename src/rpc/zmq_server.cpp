@@ -47,7 +47,7 @@ namespace
 {
   constexpr const int num_zmq_threads = 1;
   constexpr const std::int64_t max_message_size = 1024 * 1024 * 1024; // 1 GiB
-  constexpr const std::chrono::seconds linger_timeout{20}; // wait period for pending out messages
+  constexpr const std::chrono::seconds linger_timeout{200}; // wait period for pending out messages
 
   net::zmq::socket init_socket(void* context, int type, epee::span<const std::string> addresses)
   {
