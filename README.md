@@ -38,8 +38,9 @@ TODO:
 * Unimplemented changes in wallet
   * Allow wallet to create old transaction types
   * Allow wallet to create transactions with less than 2 outputs
+  * Allow wallet to create transactions with ringsize higher than 1048576
 
-Note on ringsizes: in order to have fallbacks in case some outputs are locked, the wallet will request 10% (decreased from 50%) more outputs than required for the ring.
+A note on ringsizes: in order to have fallbacks in case some outputs are locked, the wallet will request 10% (decreased from 50%) more outputs than required for the ring.
 If, for example, you want to try a ringsize = 1000 transaction, make sure that the network has at least 1100 outputs to pick from.
 
 # Monero Wildnet

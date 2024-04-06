@@ -8076,7 +8076,7 @@ uint64_t wallet2::get_min_ring_size()
 uint64_t wallet2::get_max_ring_size()
 {
   if (use_fork_rules(HF_VERSION_MIN_MIXIN_15, 0))
-    return 16777216;
+    return 1048576;
   if (use_fork_rules(8, 10))
     return 11;
   return 0;
@@ -11066,9 +11066,9 @@ uint64_t wallet2::get_upper_transaction_weight_limit()
   if (m_upper_transaction_weight_limit > 0)
     return m_upper_transaction_weight_limit;
   uint64_t full_reward_zone = use_fork_rules(5, 10) ? CRYPTONOTE_BLOCK_GRANTED_FULL_REWARD_ZONE_V5 : use_fork_rules(2, 10) ? CRYPTONOTE_BLOCK_GRANTED_FULL_REWARD_ZONE_V2 : CRYPTONOTE_BLOCK_GRANTED_FULL_REWARD_ZONE_V1;
-  if (use_fork_rules(8, 10))
-    return full_reward_zone / 2 - CRYPTONOTE_COINBASE_BLOB_RESERVED_SIZE;
-  else
+  // if (use_fork_rules(8, 10))
+  //   return full_reward_zone / 2 - CRYPTONOTE_COINBASE_BLOB_RESERVED_SIZE;
+  // else
     return full_reward_zone - CRYPTONOTE_COINBASE_BLOB_RESERVED_SIZE;
 }
 //----------------------------------------------------------------------------------------------------
